@@ -8,7 +8,7 @@ export default class Board {
     _.defaults(this, obj, {
       boardSize: 19,
       currentTurn: 0,
-      stones: []}
+      stones: {}}
     );
   }
 }

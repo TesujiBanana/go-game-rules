@@ -6,14 +6,14 @@ import { expect } from "chai"
 import Board from "../src/board";
 import Stone from "../src/stone";
 
-import { playMove } from "../src/rules";;
+import { playMove, removeStones } from "../src/rules";;
 
 describe('rules', () => {
   describe('playMove', () => {
     it('places a stone on the board', () => {
       let board = new Board();
-      let new_board = playMove([board], {B: "bc"});
-      expect(new_board.stones.bc).to.equal("B");
+      let newBoard = playMove([board], {B: "bc"});
+      expect(newBoard.stones.bc).to.equal("B");
     });
 
     it("throws an exception if a stone is played out of bounds", () => {
@@ -23,52 +23,49 @@ describe('rules', () => {
     })
   });
 
-  // describe('removeStones', () => {
-  //   it('does nothing if no stones are being removed', () => {
-  //     let stone = new Stone({B: "cc"});
-  //     let board = new Board();
-  //     let new_board = rules.removeStones(board, stone);
-  //
-  //     expect(board).to.eql(new_board);
-  //   });
-  //
-  //   it('returns a new board if stones were removed', () => {
-  //     let stone = new Stone({x: 3, y: 3, color: black});
-  //     let board = new Board({stones: [stone]});
-  //     let new_board = rules.removeStones(board, stone);
-  //
-  //     expect(new_board).to.be.instanceOf(Board);
-  //     expect(new_board).to.not.equal(board);
-  //   });
-  //
-  //   it('can remove a single stone', () => {
-  //     let stone = new Stone({x: 3, y: 3, color: black});
-  //     let board = new Board({stones: [stone]});
-  //     let new_board = rules.removeStones(board, stone);
-  //
-  //     expect(new_board.stones).to.not.include(stone);
-  //   });
+  describe('removeStones', () => {
+    it('does nothing if no stones are being removed', () => {
+      let board = new Board();
+      let newBoard = removeStones(board, {cc: "B"});
+
+      expect(board).to.eql(newBoard);
+    });
+
+    it('returns a new board if stones were removed', () => {
+      let board = new Board({stones: {cc: "B"}});
+      let newBoard = removeStones(board, {cc: "B"});
+
+      expect(newBoard).to.be.instanceOf(Board);
+      expect(newBoard).to.not.equal(board);
+    });
+
+    it('can remove a single stone', () => {
+      let board = new Board({stones: {cc: "B"}});
+      let newBoard = removeStones(board, {cc: "B"});
+
+      expect(newBoard.stones).to.not.have.any.keys("cc");
+    });
   //
   //   it('can remove a single stone from a board with 2 stones', () => {
   //     let live_stone = new Stone({x: 3, y: 3, color: black});
   //     let dead_stone = new Stone({x: 2, y: 3, color: white});
   //     let board = new Board({stones: [live_stone, dead_stone]});
-  //     let new_board = rules.removeStones(board, dead_stone);
+  //     let newBoard = rules.removeStones(board, dead_stone);
   //
-  //     expect(new_board.stones).to.include(live_stone);
-  //     expect(new_board.stones).to.not.include(dead_stone);
+  //     expect(newBoard.stones).to.include(live_stone);
+  //     expect(newBoard.stones).to.not.include(dead_stone);
   //   });
   //
   //   it('can take an array as well as an args list', () => {
   //     let live_stone = new Stone({x: 3, y: 3, color: black});
   //     let dead_stone = new Stone({x: 2, y: 3, color: white});
   //     let board = new Board({stones: [live_stone, dead_stone]});
-  //     let new_board = rules.removeStones(board, [dead_stone]);
+  //     let newBoard = rules.removeStones(board, [dead_stone]);
   //
-  //     expect(new_board.stones).to.include(live_stone);
-  //     expect(new_board.stones).to.not.include(dead_stone);
+  //     expect(newBoard.stones).to.include(live_stone);
+  //     expect(newBoard.stones).to.not.include(dead_stone);
   //   });
-  // });
+  });
   //
   // describe('findDeadStones', () => {
   //   it('returns nothing for a lone live stone', () => {

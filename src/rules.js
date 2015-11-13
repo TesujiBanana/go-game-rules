@@ -9,7 +9,7 @@ export class InvalidMoveException extends Error {
   constructor(message) {
     super(message);
     this.message = message;
-    this.name = "InvalidMoveException"; //this.constructor.name;
+    this.name = "InvalidMoveException";
     Error.captureStackTrace(this, "InvalidMoveException");
   }
 }
@@ -56,9 +56,7 @@ function coordinatesOutOfBounds(board, coords) {
 // },
 
 export function placeStones(board) {
-  // var args = _.flatten(arguments).slice(1);
   let moves = _.flatten(arguments).slice(1);
-
 
   for (let move of moves) {
     validateStoneInBounds(board, move);
@@ -71,23 +69,26 @@ export function placeStones(board) {
   });
 }
 
-// removeStones: function(board) {
-//   var args = _.flatten(arguments).slice(1);
-//
-//   var valid_stones = _.filter(args, function(stone) {
-//     return (
-//       !this.coordinatesOutOfBounds(board, stone.x, stone.y) &&
-//       stone === this.stoneAt(board, stone.x, stone.y)
-//     );
-//   }.bind(this));
-//
-//   if (valid_stones.length === 0) { return board }
-//
-//   return new Board({
-//     boardSize: board.boardSize,
-//     stones: _.values(_.omit(this.getBoardOverlay(board, board.stones), _.keys(this.getBoardOverlay(board, valid_stones))))
-//   });
-// },
+export function removeStones(board, stones) {
+  // var stones = _.flatten(arguments).slice(1);
+
+  // TODO: validate inputs?
+  // var valid_stones = _.filter(args, function(stone) {
+  //   return (
+  //     !this.coordinatesOutOfBounds(board, stone.x, stone.y) &&
+  //     stone === this.stoneAt(board, stone.x, stone.y)
+  //   );
+  // }.bind(this));
+
+  if (stones.length === 0) { return board }
+
+  return new Board({
+    boardSize: board.boardSize,
+    stones: _.omit(board.stones, _.keys(stones)),
+    currentTurn: board.currentTurn
+  });
+}
+
 // findKills: function(board, stone) {
 //   return _.reduce(
 //     this.getNeighboringStones(board, stone).filter(function(neighbor_stone) {
