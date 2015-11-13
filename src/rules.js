@@ -2,8 +2,8 @@
 
 var _ = require('underscore');
 
-// var Stone = require('../models/stone.js');
-// var Board = require('../models/board.js');
+import Stone from "./stone";
+import Board from "./board";
 
 var InvalidMoveException = function InvalidMoveException(message) {
    this.message = message;
@@ -46,12 +46,11 @@ var Rules = {
 
     if (valid_stones.length === 0) { return null }
 
-    // return new Board({
-    return {
+    return new Board({
       boardSize: board.boardSize,
       stones: board.stones.concat(valid_stones),
       currentTurn: 1 - board.currentTurn
-    };
+    });
   },
   removeStones: function(board) {
     var args = _.flatten(arguments).slice(1);
@@ -65,10 +64,10 @@ var Rules = {
 
     if (valid_stones.length === 0) { return board }
 
-    return {
+    return new Board({
       boardSize: board.boardSize,
       stones: _.values(_.omit(this.getBoardOverlay(board, board.stones), _.keys(this.getBoardOverlay(board, valid_stones))))
-    };
+    });
   },
   findKills: function(board, stone) {
     return _.reduce(
@@ -131,7 +130,7 @@ var Rules = {
     // console.log(old_board.currentTurn, move.color);
 
     // create and place the new stone
-    var new_stone = move; //new Stone(move);
+    var new_stone = new Stone(move);
     var new_board = this.placeStones(old_board, new_stone);
 
     // find dead stones and remove them

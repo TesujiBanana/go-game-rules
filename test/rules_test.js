@@ -1,121 +1,125 @@
 "use strict";
 
-// var mocha = require('mocha');
-// var expect = require('chai').expect;
-import mocha from "mocha";
-import { expect } from "chai";
+// let mocha = require('mocha');
+// let expect = require('chai').expect;
+import mocha from "mocha"
+import { expect } from "chai"
 
-var GoRules = require("../src/rules.js");
+import Board from "../src/board";
+import Stone from "../src/stone";
 
-var emptyBoard = {boardSize: 19, currentTurn: 0, stones: []}
+let rules = require("../src/rules.js");
 
-describe('GoRules', function() {
-  describe('playMove', function() {
-    it('places a stone on the board', function() {
-      var board = emptyBoard;
-      var stone = {x: 2, y: 3, color: 0};
+const black = 0;
+const white = 1;
 
-      var new_board = GoRules.playMove([board], stone);
+describe('rules', () => {
+  describe('playMove', () => {
+    it('places a stone on the board', () => {
+      let board = new Board();
+      let stone = new Stone({x: 2, y: 3, color: 0});
+
+      let new_board = rules.playMove([board], stone);
       expect(new_board.stones).to.include(stone);
     });
   });
 
-  describe('removeStones', function() {
-    it('does nothing if no stones are being removed', function() {
-      var stone = new Stone({x: 3, y: 3, color: Stone.BLACK});
-      var board = new Board();
-      var new_board = GoRules.removeStones(board, stone);
+  describe('removeStones', () => {
+    it('does nothing if no stones are being removed', () => {
+      let stone = new Stone({x: 3, y: 3, color: black});
+      let board = new Board();
+      let new_board = rules.removeStones(board, stone);
 
       expect(board).to.eql(new_board);
     });
 
-    it('returns a new board if stones were removed', function() {
-      var stone = new Stone({x: 3, y: 3, color: Stone.BLACK});
-      var board = new Board({stones: [stone]});
-      var new_board = GoRules.removeStones(board, stone);
+    it('returns a new board if stones were removed', () => {
+      let stone = new Stone({x: 3, y: 3, color: black});
+      let board = new Board({stones: [stone]});
+      let new_board = rules.removeStones(board, stone);
 
       expect(new_board).to.be.instanceOf(Board);
       expect(new_board).to.not.equal(board);
     });
 
-    it('can remove a single stone', function() {
-      var stone = new Stone({x: 3, y: 3, color: Stone.BLACK});
-      var board = new Board({stones: [stone]});
-      var new_board = GoRules.removeStones(board, stone);
+    it('can remove a single stone', () => {
+      let stone = new Stone({x: 3, y: 3, color: black});
+      let board = new Board({stones: [stone]});
+      let new_board = rules.removeStones(board, stone);
 
       expect(new_board.stones).to.not.include(stone);
     });
 
-    it('can remove a single stone from a board with 2 stones', function() {
-      var live_stone = new Stone({x: 3, y: 3, color: Stone.BLACK});
-      var dead_stone = new Stone({x: 2, y: 3, color: Stone.WHITE});
-      var board = new Board({stones: [live_stone, dead_stone]});
-      var new_board = GoRules.removeStones(board, dead_stone);
+    it('can remove a single stone from a board with 2 stones', () => {
+      let live_stone = new Stone({x: 3, y: 3, color: black});
+      let dead_stone = new Stone({x: 2, y: 3, color: white});
+      let board = new Board({stones: [live_stone, dead_stone]});
+      let new_board = rules.removeStones(board, dead_stone);
 
       expect(new_board.stones).to.include(live_stone);
       expect(new_board.stones).to.not.include(dead_stone);
     });
 
-    it('can take an array as well as an args list', function() {
-      var live_stone = new Stone({x: 3, y: 3, color: Stone.BLACK});
-      var dead_stone = new Stone({x: 2, y: 3, color: Stone.WHITE});
-      var board = new Board({stones: [live_stone, dead_stone]});
-      var new_board = GoRules.removeStones(board, [dead_stone]);
+    it('can take an array as well as an args list', () => {
+      let live_stone = new Stone({x: 3, y: 3, color: black});
+      let dead_stone = new Stone({x: 2, y: 3, color: white});
+      let board = new Board({stones: [live_stone, dead_stone]});
+      let new_board = rules.removeStones(board, [dead_stone]);
 
       expect(new_board.stones).to.include(live_stone);
       expect(new_board.stones).to.not.include(dead_stone);
     });
   });
 
-  describe('findDeadStones', function() {
-    it('returns nothing for a lone live stone', function() {
-      var stone = new Stone({x: 3, y: 3, color: Stone.BLACK});
-      var board = new Board({stones: [stone]});
-      expect(GoRules.findDeadStones(board, stone)).to.eql([]);
+  describe('findDeadStones', () => {
+    it('returns nothing for a lone live stone', () => {
+      let stone = new Stone({x: 3, y: 3, color: black});
+      let board = new Board({stones: [stone]});
+      expect(rules.findDeadStones(board, stone)).to.eql([]);
     });
 
-    it('for a single surrounded stone, returns a list with the dead stone', function() {
-      var dead_stone = new Stone({x: 3, y: 2, color: Stone.BLACK});
-      var board = new Board({stones: [
+    it('for a single surrounded stone, returns a list with the dead stone', () => {
+      let dead_stone = new Stone({x: 3, y: 2, color: black});
+      let board = new Board({stones: [
         dead_stone,
-        new Stone({x: 2, y: 2, color: Stone.WHITE}),
-        new Stone({x: 3, y: 1, color: Stone.WHITE}),
-        new Stone({x: 4, y: 2, color: Stone.WHITE}),
-        new Stone({x: 3, y: 3, color: Stone.WHITE})
+        new Stone({x: 2, y: 2, color: white}),
+        new Stone({x: 3, y: 1, color: white}),
+        new Stone({x: 4, y: 2, color: white}),
+        new Stone({x: 3, y: 3, color: white})
       ]});
-      expect(GoRules.findDeadStones(board, dead_stone)).to.eql([dead_stone]);
+      expect(rules.findDeadStones(board, dead_stone)).to.eql([dead_stone]);
     });
 
-    it('for a surrounded group, returns a list with all the dead stones', function() {
-      var dead_stones = [
-        new Stone({x: 3, y: 2, color: Stone.BLACK}),
-        new Stone({x: 3, y: 3, color: Stone.BLACK})
+    it('for a surrounded group, returns a list with all the dead stones', () => {
+      let dead_stones = [
+        new Stone({x: 3, y: 2, color: black}),
+        new Stone({x: 3, y: 3, color: black})
       ];
-      var board = new Board({stones: dead_stones.concat(
-        new Stone({x: 2, y: 2, color: Stone.WHITE}),
-        new Stone({x: 3, y: 1, color: Stone.WHITE}),
-        new Stone({x: 4, y: 2, color: Stone.WHITE}),
-        new Stone({x: 4, y: 3, color: Stone.WHITE}),
-        new Stone({x: 3, y: 4, color: Stone.WHITE}),
-        new Stone({x: 2, y: 3, color: Stone.WHITE})
+      let board = new Board({stones: dead_stones.concat(
+        new Stone({x: 2, y: 2, color: white}),
+        new Stone({x: 3, y: 1, color: white}),
+        new Stone({x: 4, y: 2, color: white}),
+        new Stone({x: 4, y: 3, color: white}),
+        new Stone({x: 3, y: 4, color: white}),
+        new Stone({x: 2, y: 3, color: white})
       )});
-      expect(GoRules.findDeadStones(board, dead_stones[0])).to.have.members(dead_stones);
+      expect(rules.findDeadStones(board, dead_stones[0])).to.have.members(dead_stones);
     });
 
-    it('can find dead stones on the edge', function() {
-      var dead_stones = [
-        new Stone({x: 18, y: 8, color: Stone.BLACK}),
-        new Stone({x: 18, y: 9, color: Stone.BLACK}),
-        new Stone({x: 18, y: 10, color: Stone.BLACK})
+    it('can find dead stones on the edge', () => {
+      let dead_stones = [
+        new Stone({x: 18, y: 8, color: black}),
+        new Stone({x: 18, y: 9, color: black}),
+        new Stone({x: 18, y: 10, color: black})
       ];
-      var board = new Board({stones: dead_stones.concat(
-        new Stone({x: 18, y: 7, color: Stone.WHITE}),
-        new Stone({x: 17, y: 8, color: Stone.WHITE}),
-        new Stone({x: 17, y: 9, color: Stone.WHITE}),
-        new Stone({x: 17, y: 10, color: Stone.WHITE}),
-        new Stone({x: 18, y: 11, color: Stone.WHITE})
+      let board = new Board({stones: dead_stones.concat(
+        new Stone({x: 18, y: 7, color: white}),
+        new Stone({x: 17, y: 8, color: white}),
+        new Stone({x: 17, y: 9, color: white}),
+        new Stone({x: 17, y: 10, color: white}),
+        new Stone({x: 18, y: 11, color: white})
       )});
-      expect(GoRules.findDeadStones(board, dead_stones[0])).to.have.members(dead_stones);
+      expect(rules.findDeadStones(board, dead_stones[0])).to.have.members(dead_stones);
     });
   });
 });
