@@ -4,7 +4,7 @@
   "description": "Go Game Rules",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --compilers js:babel-core/register"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,8 @@
     "chai": "^3.4.1",
     "mocha": "^2.3.3",
     "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.1.18"
   }
 }
