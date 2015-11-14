@@ -37,14 +37,16 @@ function coordinatesOutOfBounds(board, coords) {
 //   if (this.coordinatesOutOfBounds(board, x, y)) { return undefined }
 //   return _.first(_.where(board.stones, {x: x, y: y})) || null;
 // },
-// getNeighboringStones: function(board, stone) {
-//   return [
-//     this.stoneAt(board, stone.x - 1, stone.y),
-//     this.stoneAt(board, stone.x, stone.y + 1),
-//     this.stoneAt(board, stone.x + 1, stone.y),
-//     this.stoneAt(board, stone.x, stone.y - 1)
-//   ];
-// },
+export function getNeighboringStones(board, coords) {
+  let neightboringIntersections = _.filter([
+    coords.charAt(0) + String.fromCharCode(coords.charCodeAt(1) + 1),
+    coords.charAt(0) + String.fromCharCode(coords.charCodeAt(1) - 1),
+    String.fromCharCode(coords.charCodeAt(0) - 1) + coords.charAt(1),
+    String.fromCharCode(coords.charCodeAt(0) + 1) + coords.charAt(1)
+  ], coords => !coordinatesOutOfBounds(board, coords));
+
+  return _.pick(board.stones, neightboringIntersections);
+}
 // getBoardOverlay: function(board, new_stones) {
 //   var stones = (new_stones !== undefined) ? new_stones : board.stones;
 //   return _.object(
@@ -101,15 +103,21 @@ export function removeStones(board, stones) {
 //     []
 //   );
 // },
-// findDeadStones: function(board, stone) {
-//   var _findDeadStones = function(board, queue, group) {
-//     // if there is nothing left to check, we are dead.
-//     if (queue.length === 0) { return group }
-//
-//     var stone = queue[0],
-//         rest = queue.slice(1),
-//         neighbors = this.getNeighboringStones(board, stone);
-//
+export function findDeadStones(board, stone) {
+  function _findDeadStones(board, queue, group) {
+    // if there is nothing left to check, we are dead.
+    if (queue.length === 0) { return group }
+
+    let [stone, ...rest] = queue,
+        // rest = queue.slice(1),
+        coords = _.keys(stone)[0],
+        neightbors = getNeighboringStones(board, coords);
+
+    console.log(stone, rest);
+
+    console.log(coords);
+        // neighbors = this.getNeighboringStones(board, stone);
+
 //     // if we find a null (empty) neighbor, we are alive.
 //     if (neighbors.indexOf(null) >= 0) { return [] }
 //
@@ -123,9 +131,9 @@ export function removeStones(board, stones) {
 //       })),
 //       group.concat(stone)
 //     );
-//   }.bind(this);
-//   return _findDeadStones(board, [stone], []);
-// },
+  } //.bind(this);
+  return _findDeadStones(board, [stone], []);
+}
 // getBoard: function(board_history, moves) {
 //   if (moves.length === 0) {
 //     return board_history.slice(-1)[0];
