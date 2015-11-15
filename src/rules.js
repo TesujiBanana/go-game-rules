@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-var _ = require('underscore');
+var _ = require("underscore");
 
 import Stone from "./stone";
 import Board from "./board";
@@ -25,7 +25,7 @@ function validateStoneInBounds(board, move) {
 
 function coordinatesOutOfBounds(board, coords) {
   let minChar = "a".charCodeAt();
-  let maxChar = 'a'.charCodeAt() + board.boardSize - 1;
+  let maxChar = "a".charCodeAt() + board.boardSize - 1;
 
   return minChar > coords.charCodeAt(0) ||
          maxChar < coords.charCodeAt(0) ||
@@ -104,7 +104,7 @@ export function findDeadStones(board, group) {
     .reduce((left, right) => _.extend({}, left, right))
     .value()
 
-  // if there were no friendly neighbors, we're dead!
+  // if there were no friendly neighbors, we"re dead!
   if (!friendlyNeighbors) {
     return group;
   }
@@ -114,13 +114,18 @@ export function findDeadStones(board, group) {
 }
 
 export function playMove(board, move) {
-  // make sure there isn't a stone already there
-  // if (this.stoneAt(old_board, move.x, move.y)) {
-    // throw new InvalidMoveException('stone already at (' + move.x + ', ' + move.y + ')');
-  // }
+  let color = _.keys(move)[0];
+  let coords = move[color];
 
-  // TODO: validate current player
-  // console.log(old_board.currentTurn, move.color);
+  // make sure there isn"t a stone already there
+  if (board.stones[coords]) {
+    throw new InvalidMoveException(`stone already at (${coords})`);
+  }
+
+  // validate current player
+  if (board.currentTurn !== color) {
+    throw new InvalidMoveException(`out of turn: current turn is ${board.currentTurn}`);
+  }
 
   // place the new stone
   var newBoard = placeStones(board, move);
@@ -131,12 +136,12 @@ export function playMove(board, move) {
 
   // check suicide
   if (checkSuicide(newBoard, move)) {
-    throw new InvalidMoveException('stone placed in suicide');
+    throw new InvalidMoveException("stone placed in suicide");
   }
 
   // check ko (note: no need to check ko if there were no kills)
   if (kills && !_.isEmpty(kills) && checkKo(newBoard)) {
-    throw new InvalidMoveException('move violates rule of ko');
+    throw new InvalidMoveException("move violates rule of ko");
   }
 
   return newBoard;
@@ -146,7 +151,6 @@ function checkSuicide(board, move) {
   let stone = _.invert(move);
   return !_.isEmpty(findDeadStones(board, stone))
 }
-
 
 function checkKo(board) {
   var oldBoard = board.previous;

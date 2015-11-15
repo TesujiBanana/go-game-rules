@@ -18,6 +18,18 @@ describe("rules", () => {
       expect(newBoard.stones.bc).to.equal("B");
     });
 
+    it("throws an exception if intersection is already occupied", () => {
+      let board = new Board({stones: {bc: "B"}});
+      let badMove = () => playMove(board, {W: "bc"});
+      expect(badMove).to.throw(/stone already at/);
+    });
+
+    it("throws an exception if move is out of turn", () => {
+      let board = new Board({stones: {bc: "B"}, currentTurn: "W"});
+      let badMove = () => playMove(board, {B: "cc"});
+      expect(badMove).to.throw(/out of turn/);
+    });
+
     it("throws an exception if a stone is played out of bounds", () => {
       let board = new Board();
       let badMove = () => playMove(board, {B: "yz"});
@@ -32,8 +44,10 @@ describe("rules", () => {
       // d . . b w b w .
       // e . . . . . . .
       // f . . . . . . .
+      let board = new Board({
+        stones: {cd: "B", dd: "W", dc: "B", ec: "W", ed: "B", fd: "W"}
+      });
 
-      let board = new Board({stones: {cd: "B", dd: "W", dc: "B", ec: "W", ed: "B", fd: "W"}});
       let newBoard = playMove(board, {B: "de"});
       expect(newBoard.stones).to.eql({cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B"});
     });
@@ -46,8 +60,10 @@ describe("rules", () => {
       // d . . b . b w .
       // e . . . b . . .
       // f . . . . . . .
-
-      let board = new Board({stones: {cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B"}});
+      let board = new Board({
+        stones: {cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B"},
+        currentTurn: "W"
+      });
       let suicide = () => playMove(board, {W: "dd"});
       expect(suicide).to.throw(/suicide/);
     });
@@ -60,8 +76,11 @@ describe("rules", () => {
       // d . . b . b w .
       // e . . . b w . .
       // f . . . . . . .
+      let board = new Board({
+        stones: {cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B", ee: "W", fc: "B"},
+        currentTurn: "W"
+      });
 
-      let board = new Board({stones: {cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B", ee: "W", fc: "B"}});
       let newBoard = playMove(board, {W: "dd"});
       let ko = () => playMove(newBoard, {B: "ed"});
       expect(ko).to.throw(/move violates rule of ko/);
