@@ -100,7 +100,6 @@ export function findDeadStones(board, group) {
     .reduce((left, right) => _.extend({}, left, right))
     .value()
 
-
   // if there were no friendly neighbors, we're dead!
   if (!friendlyNeighbors) {
     return group;

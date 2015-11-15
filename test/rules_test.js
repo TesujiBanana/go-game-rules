@@ -72,22 +72,22 @@ describe("rules", () => {
   describe("getNeighbors", () => {
     it("returns 4 neighbors for a stone in the middle of the board", () => {
       let board = new Board({stones: {cc: "B"}});
-      expect(getNeighbors(board, "cc")).to.contain("cd", "cb", "bc", "dc");
+      expect(getNeighbors(board, "cc")).to.have.same.members(["cd", "cb", "bc", "dc"]);
     });
 
     it("returns 3 neighbors for a stone on the edge fo the board", () => {
       let board = new Board();
-      expect(getNeighbors(board, "ca")).to.contain("cb", "ba", "da");
+      expect(getNeighbors(board, "ca")).to.have.same.members(["cb", "ba", "da"]);
     });
 
     it("returns 3 neighbors for a stone on the far edge fo the board", () => {
       let board = new Board();
-      expect(getNeighbors(board, "fr")).to.contain("fq", "er", "gr");
+      expect(getNeighbors(board, "fs")).to.have.same.members(["fr", "es", "gs"]);
     });
 
     it("returns 3 neighbors for a stone on the edge fo the board", () => {
       let board = new Board();
-      expect(getNeighbors(board, "aa")).to.contain("ab", "ba");
+      expect(getNeighbors(board, "aa")).to.have.same.members(["ab", "ba"]);
     });
 
   });
@@ -117,12 +117,12 @@ describe("rules", () => {
     });
 
     it("can find dead stones on the edge", () => {
-      let deadStones = {rh: "B", ri: "B", rj: "B"};
+      let deadStones = {sh: "B", si: "B", sj: "B"};
       let board = new Board({stones: _.extend({},
         deadStones,
-        {rg: "W", qh: "W", qi: "W", qj: "W", rk: "W"}
+        {sg: "W", rh: "W", ri: "W", rj: "W", sk: "W"}
       )});
-      expect(findDeadStones(board, {cb: "ri"})).to.eql(deadStones);
+      expect(findDeadStones(board, {si: "B"})).to.eql(deadStones);
     });
   });
 });
