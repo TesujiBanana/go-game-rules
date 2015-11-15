@@ -4,7 +4,7 @@
   "description": "Go Game Rules",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register"
+    "test": "./node_modules/.bin/mocha --compilers js:babel-core/register"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/TesujiBanana/go-game-rules#readme",
   "dependencies": {
+    "babel-core": "^6.1.21",
     "chai": "^3.4.1",
     "mocha": "^2.3.3",
     "underscore": "^1.8.3"
