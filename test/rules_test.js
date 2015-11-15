@@ -51,6 +51,21 @@ describe("rules", () => {
       let suicide = () => playMove(board, {W: "dd"});
       expect(suicide).to.throw(/suicide/);
     });
+
+    it("throws an exception if a move violates ko", () => {
+      //   a b c d e f g
+      // a . . . . . . .
+      // b . . . . . . .
+      // c . . . b w b .
+      // d . . b . b w .
+      // e . . . b w . .
+      // f . . . . . . .
+
+      let board = new Board({stones: {cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B", ee: "W", fc: "B"}});
+      let newBoard = playMove(board, {W: "dd"});
+      let ko = () => playMove(newBoard, {B: "ed"});
+      expect(ko).to.throw(/move violates rule of ko/);
+    });
   });
 
   describe("removeStones", () => {

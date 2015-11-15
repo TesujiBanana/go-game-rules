@@ -49,20 +49,18 @@ export function placeStones(board) {
     validateStoneInBounds(board, move);
   }
 
-  return new Board({
-    boardSize: board.boardSize,
+  return new Board(board, {
     stones: _.extend({}, board.stones, ..._.map(moves, _.invert)),
-    currentTurn: 1 - board.currentTurn
+    currentTurn: board.currentTurn === "B" ? "W" : "B",
+    previous: board
   });
 }
 
 export function removeStones(board, stones) {
   if (stones.length === 0) { return board }
 
-  return new Board({
-    boardSize: board.boardSize,
+  return new Board(board, {
     stones: _.omit(board.stones, _.keys(stones)),
-    currentTurn: board.currentTurn
   });
 }
 
@@ -115,20 +113,6 @@ export function findDeadStones(board, group) {
   return findDeadStones(board, _.extend({}, group, friendlyNeighbors));
 }
 
-// getBoard: function(board_history, moves) {
-//   if (moves.length === 0) {
-//     return board_history.slice(-1)[0];
-//   }
-//   else {
-//     var new_board = this.playMove(board_history, moves[0]);
-//     return this.getBoard(
-//       board_history.concat(new_board),
-//       moves.slice(1)
-//     );
-//   }
-// },
-
-// export function playMove(board_history, move) {
 export function playMove(board, move) {
   // make sure there isn't a stone already there
   // if (this.stoneAt(old_board, move.x, move.y)) {
@@ -138,11 +122,11 @@ export function playMove(board, move) {
   // TODO: validate current player
   // console.log(old_board.currentTurn, move.color);
 
-  // create and place the new stone
+  // place the new stone
   var newBoard = placeStones(board, move);
 
   // find dead stones and remove them
-  var kills = findKills(newBoard, move);
+  let kills = findKills(newBoard, move);
   newBoard = removeStones(newBoard, kills);
 
   // check suicide
@@ -151,11 +135,10 @@ export function playMove(board, move) {
   }
 
   // check ko (note: no need to check ko if there were no kills)
-  // if (kills && kills.length > 0 && this.checkKo(board_history, new_board)) {
-  //   throw new InvalidMoveException('move violates rule of ko');
-  // }
+  if (kills && !_.isEmpty(kills) && checkKo(newBoard)) {
+    throw new InvalidMoveException('move violates rule of ko');
+  }
 
-  // create a new game state with the new board and the turn set
   return newBoard;
 }
 
@@ -165,10 +148,12 @@ function checkSuicide(board, move) {
 }
 
 
-// checkKo: function(board_history, new_board) {
-//   return board_history.some(function(old_board) {
-//     // TODO: bloom filter ...
-//     return new_board.stones.length === old_board.stones.length &&
-//       _.isEqual(this.getBoardOverlay(old_board), this.getBoardOverlay(new_board));
-//   }.bind(this));
-// }
+function checkKo(board) {
+  var oldBoard = board.previous;
+  while (oldBoard) {
+    if (_.isEqual(_.omit(board, "previous"), _.omit(oldBoard, "previous"))) {
+      return true;
+    }
+    oldBoard = oldBoard.previous;
+  }
+}
