@@ -8,7 +8,7 @@ import _ from "underscore";
 import Board from "../src/board";
 import Stone from "../src/stone";
 
-import { playMove, removeStones, getNeighboringStones, findDeadStones } from "../src/rules";;
+import { playMove, removeStones, getNeighbors, findDeadStones } from "../src/rules";;
 
 describe("rules", () => {
   describe("playMove", () => {
@@ -69,20 +69,25 @@ describe("rules", () => {
   //   });
   });
 
-  describe("getNeighboringStones", () => {
-    it("returns nothing for a lone stone", () => {
+  describe("getNeighbors", () => {
+    it("returns 4 neighbors for a stone in the middle of the board", () => {
       let board = new Board({stones: {cc: "B"}});
-      expect(getNeighboringStones(board, "cc")).to.eql({});
+      expect(getNeighbors(board, "cc")).to.contain("cd", "cb", "bc", "dc");
     });
 
-    it("returns some neighbors", () => {
-      let board = new Board({stones: {bc: "W", cc: "B", cb: "W"}});
-      expect(getNeighboringStones(board, "cc")).to.eql({bc: "W", cb: "W"});
+    it("returns 3 neighbors for a stone on the edge fo the board", () => {
+      let board = new Board();
+      expect(getNeighbors(board, "ca")).to.contain("cb", "ba", "da");
     });
 
-    it("does not return stones on the other side of the board", () => {
-      let board = new Board({stones: {bc: "W", op: "B"}});
-      expect(getNeighboringStones(board, "bc")).to.eql({});
+    it("returns 3 neighbors for a stone on the far edge fo the board", () => {
+      let board = new Board();
+      expect(getNeighbors(board, "fr")).to.contain("fq", "er", "gr");
+    });
+
+    it("returns 3 neighbors for a stone on the edge fo the board", () => {
+      let board = new Board();
+      expect(getNeighbors(board, "aa")).to.contain("ab", "ba");
     });
 
   });
@@ -91,7 +96,7 @@ describe("rules", () => {
     it("returns nothing for a lone live stone", () => {
       // let stone = new Stone({x: 3, y: 3, color: black});
       let board = new Board({stones: {cc: "B"}});
-      expect(findDeadStones(board, {cc: "B"})).to.eql([]);
+      expect(getNeighbors(board, {cc: "B"})).to.eql([]);
     });
   //
   //   it("for a single surrounded stone, returns a list with the dead stone", () => {

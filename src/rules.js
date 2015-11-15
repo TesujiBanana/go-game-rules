@@ -37,15 +37,13 @@ function coordinatesOutOfBounds(board, coords) {
 //   if (this.coordinatesOutOfBounds(board, x, y)) { return undefined }
 //   return _.first(_.where(board.stones, {x: x, y: y})) || null;
 // },
-export function getNeighboringStones(board, coords) {
-  let neightboringIntersections = _.filter([
+export function getNeighbors(board, coords) {
+  return _.filter([
     coords.charAt(0) + String.fromCharCode(coords.charCodeAt(1) + 1),
     coords.charAt(0) + String.fromCharCode(coords.charCodeAt(1) - 1),
     String.fromCharCode(coords.charCodeAt(0) - 1) + coords.charAt(1),
     String.fromCharCode(coords.charCodeAt(0) + 1) + coords.charAt(1)
   ], coords => !coordinatesOutOfBounds(board, coords));
-
-  return _.pick(board.stones, neightboringIntersections);
 }
 // getBoardOverlay: function(board, new_stones) {
 //   var stones = (new_stones !== undefined) ? new_stones : board.stones;
