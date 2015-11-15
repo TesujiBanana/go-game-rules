@@ -2,7 +2,6 @@
 
 var _ = require("underscore");
 
-import Stone from "./stone";
 import Board from "./board";
 
 export class InvalidMoveException extends Error {

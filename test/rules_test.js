@@ -6,7 +6,6 @@ import { expect } from "chai"
 import _ from "underscore";
 
 import Board from "../src/board";
-import Stone from "../src/stone";
 
 import { playMove, removeStones, getNeighbors, findDeadStones } from "../src/rules";;
 
