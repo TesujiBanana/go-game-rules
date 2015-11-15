@@ -25,21 +25,31 @@ describe("rules", () => {
     });
 
     it("handles kills and returns a new board", () => {
+      //   a b c d e f g
+      // a . . . . . . .
+      // b . . . . . . .
+      // c . . . b w . .
+      // d . . b w b w .
+      // e . . . . . . .
+      // f . . . . . . .
+
       let board = new Board({stones: {cd: "B", dd: "W", dc: "B", ec: "W", ed: "B", fd: "W"}});
-      let newBoard = playMove(board, {de: "B"});
+      let newBoard = playMove(board, {B: "de"});
       expect(newBoard.stones).to.eql({cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B"});
-
-      // . . . . . . .
-      // . . . . . . .
-      // . . . b w . .
-      // . . b w b w .
-      // . . . . . . .
-      // . . . . . . .
-
     });
 
     it("throws an exception if a stone is played in suicide", () => {
+      //   a b c d e f g
+      // a . . . . . . .
+      // b . . . . . . .
+      // c . . . b w . .
+      // d . . b . b w .
+      // e . . . b . . .
+      // f . . . . . . .
 
+      let board = new Board({stones: {cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B"}});
+      let suicide = () => playMove(board, {W: "dd"});
+      expect(suicide).to.throw(/suicide/);
     });
   });
 
@@ -116,13 +126,19 @@ describe("rules", () => {
     });
 
     it("for a single surrounded stone, returns the dead stone", () => {
-      let dead_stone = {cb: "B"}; //new Stone({x: 3, y: 2, color: black});
+      let deadStone = {cb: "B"};
       let board = new Board({stones: _.extend({},
-        dead_stone,
+        deadStone,
         {bb: "W", ca: "W", db: "W", cc: "W"}
       )})
-      expect(findDeadStones(board, dead_stone)).to.eql(dead_stone);
+      expect(findDeadStones(board, deadStone)).to.eql(deadStone);
     });
+
+    it("can make a ponnuki", () => {
+      let board = new Board({stones: {cd: "B", dd: "W", dc: "B", ec: "W", ed: "B", fd: "W", de: "B"}});
+      expect(findDeadStones(board, {dd: "W"})).to.eql({dd: "W"})
+
+    })
 
     it("for a surrounded group, returns all the dead stones", () => {
       let deadStones = {cb: "B", cc: "B"};

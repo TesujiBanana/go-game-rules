@@ -66,18 +66,24 @@ export function removeStones(board, stones) {
   });
 }
 
-// findKills: function(board, stone) {
-//   return _.reduce(
-//     this.getNeighboringStones(board, stone).filter(function(neighbor_stone) {
-//       return neighbor_stone && (stone.color !== neighbor_stone.color);
-//     }),
-//     function(dead_stones, seed_stone) {
-//       if (_.contains(dead_stones, seed_stone)) { return dead_stones }
-//       return dead_stones.concat(this.findDeadStones(board, seed_stone));
-//     }.bind(this),
-//     []
-//   );
-// },
+function getStone(board, coords) {
+  return {[coords]: board.stones[coords]};
+}
+
+function findKills(board, stone) {
+  let color = _.keys(stone)[0];
+  let coords = stone[color];
+  let opponent = color === "B" ? "W": "B";
+
+  let neighbors = getNeighbors(board, coords);
+  let groups = _.chain(neighbors)
+    .filter(n => board.stones[n] === opponent) // find neighboring opponent stones
+    .map(coords => getStone(board, coords))
+    .map(stone => findDeadStones(board, stone))
+    .value();
+
+  return _.extend({}, ...groups);
+}
 
 export function findDeadStones(board, group) {
   let color = _.values(group)[0];
@@ -96,7 +102,7 @@ export function findDeadStones(board, group) {
 
   let friendlyNeighbors = _.chain(neighbors)
     .filter(coords => board.stones[coords] === color) // match similar colors
-    .map(coords => ({[coords]: board.stones[coords]}))
+    .map(coords => getStone(board, coords))
     .reduce((left, right) => _.extend({}, left, right))
     .value()
 
@@ -136,14 +142,13 @@ export function playMove(board, move) {
   var newBoard = placeStones(board, move);
 
   // find dead stones and remove them
-  // var kills = this.findKills(new_board, new_stone);
-  // console.log(kills);
-  // new_board = this.removeStones(new_board, kills);
+  var kills = findKills(newBoard, move);
+  newBoard = removeStones(newBoard, kills);
 
   // check suicide
-  // if (this.checkSuicide(new_board, new_stone)) {
-  //   throw new InvalidMoveException('stone placed in suicide');
-  // }
+  if (checkSuicide(newBoard, move)) {
+    throw new InvalidMoveException('stone placed in suicide');
+  }
 
   // check ko (note: no need to check ko if there were no kills)
   // if (kills && kills.length > 0 && this.checkKo(board_history, new_board)) {
@@ -154,9 +159,10 @@ export function playMove(board, move) {
   return newBoard;
 }
 
-// checkSuicide: function(board, new_stone) {
-//   return this.findDeadStones(board, new_stone).length > 0;
-// },
+function checkSuicide(board, move) {
+  let stone = _.invert(move);
+  return !_.isEmpty(findDeadStones(board, stone))
+}
 
 
 // checkKo: function(board_history, new_board) {
