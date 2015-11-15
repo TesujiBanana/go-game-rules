@@ -14,22 +14,39 @@ describe("rules", () => {
   describe("playMove", () => {
     it("places a stone on the board", () => {
       let board = new Board();
-      let newBoard = playMove([board], {B: "bc"});
+      let newBoard = playMove(board, {B: "bc"});
       expect(newBoard.stones.bc).to.equal("B");
     });
 
     it("throws an exception if a stone is played out of bounds", () => {
       let board = new Board();
-      let badMove = () => playMove([board], {B: "yz"});
+      let badMove = () => playMove(board, {B: "yz"});
       expect(badMove).to.throw(/out of bounds/);
-    })
+    });
+
+    it("handles kills and returns a new board", () => {
+      let board = new Board({stones: {cd: "B", dd: "W", dc: "B", ec: "W", ed: "B", fd: "W"}});
+      let newBoard = playMove(board, {de: "B"});
+      expect(newBoard.stones).to.eql({cd: "B", dc: "B", ec: "W", ed: "B", fd: "W", de: "B"});
+
+      // . . . . . . .
+      // . . . . . . .
+      // . . . b w . .
+      // . . b w b w .
+      // . . . . . . .
+      // . . . . . . .
+
+    });
+
+    it("throws an exception if a stone is played in suicide", () => {
+
+    });
   });
 
   describe("removeStones", () => {
     it("does nothing if no stones are being removed", () => {
       let board = new Board();
       let newBoard = removeStones(board, {cc: "B"});
-
       expect(board).to.eql(newBoard);
     });
 

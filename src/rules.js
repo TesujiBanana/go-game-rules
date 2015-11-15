@@ -122,9 +122,8 @@ export function findDeadStones(board, group) {
 //   }
 // },
 
-export function playMove(board_history, move) {
-  var old_board = board_history.slice(-1)[0]
-
+// export function playMove(board_history, move) {
+export function playMove(board, move) {
   // make sure there isn't a stone already there
   // if (this.stoneAt(old_board, move.x, move.y)) {
     // throw new InvalidMoveException('stone already at (' + move.x + ', ' + move.y + ')');
@@ -134,8 +133,7 @@ export function playMove(board_history, move) {
   // console.log(old_board.currentTurn, move.color);
 
   // create and place the new stone
-  // var new_stone = new Stone(move);
-  var new_board = placeStones(old_board, move); //new_stone);
+  var newBoard = placeStones(board, move);
 
   // find dead stones and remove them
   // var kills = this.findKills(new_board, new_stone);
@@ -153,7 +151,7 @@ export function playMove(board_history, move) {
   // }
 
   // create a new game state with the new board and the turn set
-  return new_board;
+  return newBoard;
 }
 
 // checkSuicide: function(board, new_stone) {
