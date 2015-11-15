@@ -33,10 +33,6 @@ function coordinatesOutOfBounds(board, coords) {
          maxChar < coords.charCodeAt(1);
 }
 
-// stoneAt: function(board, x, y) {
-//   if (this.coordinatesOutOfBounds(board, x, y)) { return undefined }
-//   return _.first(_.where(board.stones, {x: x, y: y})) || null;
-// },
 export function getNeighbors(board, coords) {
   return _.filter([
     coords.charAt(0) + String.fromCharCode(coords.charCodeAt(1) + 1),
@@ -45,15 +41,6 @@ export function getNeighbors(board, coords) {
     String.fromCharCode(coords.charCodeAt(0) + 1) + coords.charAt(1)
   ], coords => !coordinatesOutOfBounds(board, coords));
 }
-// getBoardOverlay: function(board, new_stones) {
-//   var stones = (new_stones !== undefined) ? new_stones : board.stones;
-//   return _.object(
-//     stones.map(function(stone) {
-//       return stone.x + (board.boardSize * stone.y);
-//     }.bind(this)),
-//     stones
-//   );
-// },
 
 export function placeStones(board) {
   let moves = _.flatten(arguments).slice(1);
@@ -70,16 +57,6 @@ export function placeStones(board) {
 }
 
 export function removeStones(board, stones) {
-  // var stones = _.flatten(arguments).slice(1);
-
-  // TODO: validate inputs?
-  // var valid_stones = _.filter(args, function(stone) {
-  //   return (
-  //     !this.coordinatesOutOfBounds(board, stone.x, stone.y) &&
-  //     stone === this.stoneAt(board, stone.x, stone.y)
-  //   );
-  // }.bind(this));
-
   if (stones.length === 0) { return board }
 
   return new Board({
@@ -101,37 +78,38 @@ export function removeStones(board, stones) {
 //     []
 //   );
 // },
-export function findDeadStones(board, stone) {
-  function _findDeadStones(board, queue, group) {
-    // if there is nothing left to check, we are dead.
-    if (queue.length === 0) { return group }
 
-    let [stone, ...rest] = queue,
-        // rest = queue.slice(1),
-        coords = _.keys(stone)[0],
-        neightbors = getNeighboringStones(board, coords);
+export function findDeadStones(board, group) {
+  let color = _.values(group)[0];
 
-    console.log(stone, rest);
+  let neighbors = _.chain(group)
+    .keys() // keys are the coordinates
+    .map(coords => getNeighbors(board, coords)) // find neighbors for all stones in group
+    .flatten() // flatten list of lists (neighbors)
+    .filter(coords => !group[coords]) // filter out stones that are already in group
+    .value()
 
-    console.log(coords);
-        // neighbors = this.getNeighboringStones(board, stone);
+  // if we find a null (empty) neighbor, we are alive.
+  if (_.any(neighbors, n => !board.stones[n])) {
+    return {};
+  }
 
-//     // if we find a null (empty) neighbor, we are alive.
-//     if (neighbors.indexOf(null) >= 0) { return [] }
-//
-//     // call self with friendly neighbors added to queue and stone added to group.
-//     return _findDeadStones(board,
-//       rest.concat(neighbors.filter(function(neighbor_stone) {
-//         return (
-//           (neighbor_stone && stone.color === neighbor_stone.color) &&
-//           !_.contains(group, neighbor_stone)
-//         );
-//       })),
-//       group.concat(stone)
-//     );
-  } //.bind(this);
-  return _findDeadStones(board, [stone], []);
+  let friendlyNeighbors = _.chain(neighbors)
+    .filter(coords => board.stones[coords] === color) // match similar colors
+    .map(coords => ({[coords]: board.stones[coords]}))
+    .reduce((left, right) => _.extend({}, left, right))
+    .value()
+
+
+  // if there were no friendly neighbors, we're dead!
+  if (!friendlyNeighbors) {
+    return group;
+  }
+
+  // call self with friendly neighbors added to queue and stone added to group.
+  return findDeadStones(board, _.extend({}, group, friendlyNeighbors));
 }
+
 // getBoard: function(board_history, moves) {
 //   if (moves.length === 0) {
 //     return board_history.slice(-1)[0];

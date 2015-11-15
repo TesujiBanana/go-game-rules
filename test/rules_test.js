@@ -94,53 +94,35 @@ describe("rules", () => {
 
   describe("findDeadStones", () => {
     it("returns nothing for a lone live stone", () => {
-      // let stone = new Stone({x: 3, y: 3, color: black});
       let board = new Board({stones: {cc: "B"}});
-      expect(getNeighbors(board, {cc: "B"})).to.eql([]);
+      expect(findDeadStones(board, {cc: "B"})).to.eql({});
     });
-  //
-  //   it("for a single surrounded stone, returns a list with the dead stone", () => {
-  //     let dead_stone = new Stone({x: 3, y: 2, color: black});
-  //     let board = new Board({stones: [
-  //       dead_stone,
-  //       new Stone({x: 2, y: 2, color: white}),
-  //       new Stone({x: 3, y: 1, color: white}),
-  //       new Stone({x: 4, y: 2, color: white}),
-  //       new Stone({x: 3, y: 3, color: white})
-  //     ]});
-  //     expect(rules.findDeadStones(board, dead_stone)).to.eql([dead_stone]);
-  //   });
-  //
-  //   it("for a surrounded group, returns a list with all the dead stones", () => {
-  //     let dead_stones = [
-  //       new Stone({x: 3, y: 2, color: black}),
-  //       new Stone({x: 3, y: 3, color: black})
-  //     ];
-  //     let board = new Board({stones: dead_stones.concat(
-  //       new Stone({x: 2, y: 2, color: white}),
-  //       new Stone({x: 3, y: 1, color: white}),
-  //       new Stone({x: 4, y: 2, color: white}),
-  //       new Stone({x: 4, y: 3, color: white}),
-  //       new Stone({x: 3, y: 4, color: white}),
-  //       new Stone({x: 2, y: 3, color: white})
-  //     )});
-  //     expect(rules.findDeadStones(board, dead_stones[0])).to.have.members(dead_stones);
-  //   });
-  //
-  //   it("can find dead stones on the edge", () => {
-  //     let dead_stones = [
-  //       new Stone({x: 18, y: 8, color: black}),
-  //       new Stone({x: 18, y: 9, color: black}),
-  //       new Stone({x: 18, y: 10, color: black})
-  //     ];
-  //     let board = new Board({stones: dead_stones.concat(
-  //       new Stone({x: 18, y: 7, color: white}),
-  //       new Stone({x: 17, y: 8, color: white}),
-  //       new Stone({x: 17, y: 9, color: white}),
-  //       new Stone({x: 17, y: 10, color: white}),
-  //       new Stone({x: 18, y: 11, color: white})
-  //     )});
-  //     expect(rules.findDeadStones(board, dead_stones[0])).to.have.members(dead_stones);
-  //   });
+
+    it("for a single surrounded stone, returns the dead stone", () => {
+      let dead_stone = {cb: "B"}; //new Stone({x: 3, y: 2, color: black});
+      let board = new Board({stones: _.extend({},
+        dead_stone,
+        {bb: "W", ca: "W", db: "W", cc: "W"}
+      )})
+      expect(findDeadStones(board, dead_stone)).to.eql(dead_stone);
+    });
+
+    it("for a surrounded group, returns all the dead stones", () => {
+      let deadStones = {cb: "B", cc: "B"};
+      let board = new Board({stones: _.extend({},
+        deadStones,
+        {bb: "W", ca: "W", db: "W", dc: "W", cd: "W", bc: "W"}
+      )});
+      expect(findDeadStones(board, {cb: "B"})).to.eql(deadStones);
+    });
+
+    it("can find dead stones on the edge", () => {
+      let deadStones = {rh: "B", ri: "B", rj: "B"};
+      let board = new Board({stones: _.extend({},
+        deadStones,
+        {rg: "W", qh: "W", qi: "W", qj: "W", rk: "W"}
+      )});
+      expect(findDeadStones(board, {cb: "ri"})).to.eql(deadStones);
+    });
   });
 });
